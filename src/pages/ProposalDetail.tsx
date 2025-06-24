@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import Navigation from "@/components/Navigation";
 import { useToast } from "@/hooks/use-toast";
 import { 
@@ -18,12 +20,16 @@ import {
   Clock,
   Send,
   Heart,
-  Share2
+  Share2,
+  DollarSign,
+  TrendingUp
 } from "lucide-react";
 
 const ProposalDetail = () => {
   const { id } = useParams();
   const [comment, setComment] = useState("");
+  const [showInvestmentForm, setShowInvestmentForm] = useState(false);
+  const [investmentAmount, setInvestmentAmount] = useState("");
   const { toast } = useToast();
 
   // Mock data - in real app, fetch by ID
@@ -59,11 +65,13 @@ This initiative represents a significant step toward our regenerative goals and 
     author: "Alex Johnson",
     authorRole: "Environmental Scientist",
     requestedCoins: 5000,
+    raisedCoins: 1250,
     deadline: "2024-07-15",
     status: "active",
     votes: { yes: 234, no: 56, total: 290 },
     timeLeft: "5 days",
     createdAt: "2024-06-15",
+    investments: 8,
     comments: [
       {
         id: 1,
@@ -110,8 +118,21 @@ This initiative represents a significant step toward our regenerative goals and 
     }
   };
 
+  const handleInvestment = () => {
+    const amount = parseInt(investmentAmount);
+    if (amount > 0) {
+      toast({
+        title: "Investment Successful!",
+        description: `You've invested ${amount} Ertha Coins in this proposal.`,
+      });
+      setShowInvestmentForm(false);
+      setInvestmentAmount("");
+    }
+  };
+
   const yesPercentage = (proposal.votes.yes / proposal.votes.total) * 100;
   const noPercentage = (proposal.votes.no / proposal.votes.total) * 100;
+  const fundingPercentage = (proposal.raisedCoins / proposal.requestedCoins) * 100;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50">
@@ -148,6 +169,10 @@ This initiative represents a significant step toward our regenerative goals and 
                   <div className="flex items-center">
                     <Clock className="w-4 h-4 mr-1" />
                     {proposal.timeLeft} remaining
+                  </div>
+                  <div className="flex items-center">
+                    <TrendingUp className="w-4 h-4 mr-1" />
+                    {proposal.investments} investors
                   </div>
                 </div>
               </div>
@@ -243,6 +268,70 @@ This initiative represents a significant step toward our regenerative goals and 
 
           {/* Sidebar */}
           <div className="space-y-6">
+            {/* Funding Progress */}
+            <Card className="bg-white/80 backdrop-blur-sm border-green-100 eco-shadow">
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Coins className="w-5 h-5 mr-2 text-yellow-600" />
+                  Funding Progress
+                </CardTitle>
+                <CardDescription>{proposal.raisedCoins} / {proposal.requestedCoins} coins raised</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Progress value={fundingPercentage} className="h-4 bg-gray-200">
+                  <div className="h-full bg-yellow-500 rounded-full transition-all duration-300" />
+                </Progress>
+                <div className="text-center text-lg font-bold text-yellow-600">
+                  {fundingPercentage.toFixed(1)}% funded
+                </div>
+                
+                {proposal.status === "active" && (
+                  <>
+                    {showInvestmentForm ? (
+                      <div className="space-y-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                        <Label className="text-blue-800 font-medium">Invest in this proposal</Label>
+                        <div className="relative">
+                          <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-400 w-4 h-4" />
+                          <Input
+                            type="number"
+                            placeholder="Amount of coins"
+                            value={investmentAmount}
+                            onChange={(e) => setInvestmentAmount(e.target.value)}
+                            className="pl-10 border-blue-200"
+                          />
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            onClick={handleInvestment}
+                            disabled={!investmentAmount || parseInt(investmentAmount) <= 0}
+                            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+                          >
+                            <Coins className="w-4 h-4 mr-2" />
+                            Invest
+                          </Button>
+                          <Button
+                            onClick={() => setShowInvestmentForm(false)}
+                            variant="outline"
+                            className="border-blue-200 text-blue-700"
+                          >
+                            Cancel
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <Button
+                        onClick={() => setShowInvestmentForm(true)}
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                      >
+                        <DollarSign className="w-4 h-4 mr-2" />
+                        Invest Coins
+                      </Button>
+                    )}
+                  </>
+                )}
+              </CardContent>
+            </Card>
+
             {/* Voting Results */}
             <Card className="bg-white/80 backdrop-blur-sm border-green-100 eco-shadow">
               <CardHeader>

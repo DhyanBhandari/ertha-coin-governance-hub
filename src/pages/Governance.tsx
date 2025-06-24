@@ -19,12 +19,16 @@ import {
   Filter,
   Search,
   Calendar,
-  MessageCircle
+  MessageCircle,
+  DollarSign,
+  TrendingUp
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Governance = () => {
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showInvestmentForm, setShowInvestmentForm] = useState<number | null>(null);
+  const [investmentAmount, setInvestmentAmount] = useState("");
   const [filter, setFilter] = useState("all");
   const { toast } = useToast();
 
@@ -35,11 +39,13 @@ const Governance = () => {
       description: "Fund a large-scale tree planting project in deforested areas to increase carbon sequestration and biodiversity.",
       author: "Alex Johnson",
       requestedCoins: 5000,
+      raisedCoins: 1250,
       deadline: "2024-07-15",
       status: "active",
       votes: { yes: 234, no: 56, total: 290 },
       comments: 23,
-      timeLeft: "5 days"
+      timeLeft: "5 days",
+      investments: 8
     },
     {
       id: 2,
@@ -47,11 +53,13 @@ const Governance = () => {
       description: "Install solar panels in community centers to reduce carbon footprint and energy costs.",
       author: "Sarah Chen",
       requestedCoins: 12000,
+      raisedCoins: 3400,
       deadline: "2024-07-20",
       status: "active",
       votes: { yes: 189, no: 34, total: 223 },
       comments: 15,
-      timeLeft: "10 days"
+      timeLeft: "10 days",
+      investments: 12
     },
     {
       id: 3,
@@ -59,11 +67,13 @@ const Governance = () => {
       description: "Create educational workshops to teach sustainable living practices to community members.",
       author: "Mike Torres",
       requestedCoins: 3000,
+      raisedCoins: 3000,
       deadline: "2024-06-30",
       status: "completed",
       votes: { yes: 456, no: 89, total: 545 },
       comments: 31,
-      timeLeft: "Completed"
+      timeLeft: "Completed",
+      investments: 18
     }
   ];
 
@@ -81,6 +91,18 @@ const Governance = () => {
       title: "Vote Recorded!",
       description: `Your ${vote} vote has been recorded for proposal #${proposalId}.`,
     });
+  };
+
+  const handleInvestment = (proposalId: number) => {
+    const amount = parseInt(investmentAmount);
+    if (amount > 0) {
+      toast({
+        title: "Investment Successful!",
+        description: `You've invested ${amount} Ertha Coins in proposal #${proposalId}.`,
+      });
+      setShowInvestmentForm(null);
+      setInvestmentAmount("");
+    }
   };
 
   const getStatusColor = (status: string) => {
@@ -194,6 +216,7 @@ const Governance = () => {
           {proposals.map((proposal) => {
             const yesPercentage = (proposal.votes.yes / proposal.votes.total) * 100;
             const noPercentage = (proposal.votes.no / proposal.votes.total) * 100;
+            const fundingPercentage = (proposal.raisedCoins / proposal.requestedCoins) * 100;
             
             return (
               <Card key={proposal.id} className="bg-white/80 backdrop-blur-sm border-green-100 hover:bg-white transition-all duration-300 hover:scale-[1.02] eco-shadow">
@@ -214,6 +237,10 @@ const Governance = () => {
                               <MessageCircle className="w-4 h-4 mr-1" />
                               {proposal.comments} comments
                             </span>
+                            <span className="flex items-center">
+                              <TrendingUp className="w-4 h-4 mr-1" />
+                              {proposal.investments} investors
+                            </span>
                           </div>
                         </div>
                         <Badge className={getStatusColor(proposal.status)}>
@@ -221,28 +248,44 @@ const Governance = () => {
                         </Badge>
                       </div>
 
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-gray-600">Voting Results</span>
-                          <span className="text-gray-900 font-medium">{proposal.votes.total} votes</span>
-                        </div>
-                        
-                        <div className="space-y-2">
+                      <div className="space-y-4">
+                        <div className="space-y-3">
                           <div className="flex items-center justify-between text-sm">
-                            <span className="text-green-600">Yes ({proposal.votes.yes})</span>
-                            <span className="text-green-600">{yesPercentage.toFixed(1)}%</span>
+                            <span className="text-gray-600">Voting Results</span>
+                            <span className="text-gray-900 font-medium">{proposal.votes.total} votes</span>
                           </div>
-                          <Progress value={yesPercentage} className="h-2 bg-gray-200">
-                            <div className="h-full bg-green-500 rounded-full transition-all duration-300" />
-                          </Progress>
                           
-                          <div className="flex items-center justify-between text-sm">
-                            <span className="text-red-600">No ({proposal.votes.no})</span>
-                            <span className="text-red-600">{noPercentage.toFixed(1)}%</span>
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between text-sm">
+                              <span className="text-green-600">Yes ({proposal.votes.yes})</span>
+                              <span className="text-green-600">{yesPercentage.toFixed(1)}%</span>
+                            </div>
+                            <Progress value={yesPercentage} className="h-2 bg-gray-200">
+                              <div className="h-full bg-green-500 rounded-full transition-all duration-300" />
+                            </Progress>
+                            
+                            <div className="flex items-center justify-between text-sm">
+                              <span className="text-red-600">No ({proposal.votes.no})</span>
+                              <span className="text-red-600">{noPercentage.toFixed(1)}%</span>
+                            </div>
+                            <Progress value={noPercentage} className="h-2 bg-gray-200">
+                              <div className="h-full bg-red-500 rounded-full transition-all duration-300" />
+                            </Progress>
                           </div>
-                          <Progress value={noPercentage} className="h-2 bg-gray-200">
-                            <div className="h-full bg-red-500 rounded-full transition-all duration-300" />
+                        </div>
+
+                        {/* Funding Progress */}
+                        <div className="space-y-3 pt-4 border-t border-gray-200">
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-gray-600">Funding Progress</span>
+                            <span className="text-gray-900 font-medium">{proposal.raisedCoins} / {proposal.requestedCoins} coins</span>
+                          </div>
+                          <Progress value={fundingPercentage} className="h-3 bg-gray-200">
+                            <div className="h-full bg-yellow-500 rounded-full transition-all duration-300" />
                           </Progress>
+                          <div className="text-right text-sm text-yellow-600 font-medium">
+                            {fundingPercentage.toFixed(1)}% funded
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -274,6 +317,48 @@ const Governance = () => {
                             <Vote className="w-4 h-4 mr-2" />
                             Vote No
                           </Button>
+                          
+                          {/* Investment Section */}
+                          {showInvestmentForm === proposal.id ? (
+                            <div className="space-y-3 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                              <Label className="text-blue-800 font-medium">Invest in this proposal</Label>
+                              <div className="relative">
+                                <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-400 w-4 h-4" />
+                                <Input
+                                  type="number"
+                                  placeholder="Amount of coins"
+                                  value={investmentAmount}
+                                  onChange={(e) => setInvestmentAmount(e.target.value)}
+                                  className="pl-10 border-blue-200"
+                                />
+                              </div>
+                              <div className="flex gap-2">
+                                <Button
+                                  onClick={() => handleInvestment(proposal.id)}
+                                  disabled={!investmentAmount || parseInt(investmentAmount) <= 0}
+                                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+                                >
+                                  <Coins className="w-4 h-4 mr-2" />
+                                  Invest
+                                </Button>
+                                <Button
+                                  onClick={() => setShowInvestmentForm(null)}
+                                  variant="outline"
+                                  className="border-blue-200 text-blue-700"
+                                >
+                                  Cancel
+                                </Button>
+                              </div>
+                            </div>
+                          ) : (
+                            <Button
+                              onClick={() => setShowInvestmentForm(proposal.id)}
+                              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                            >
+                              <DollarSign className="w-4 h-4 mr-2" />
+                              Invest Coins
+                            </Button>
+                          )}
                         </div>
                       )}
 
