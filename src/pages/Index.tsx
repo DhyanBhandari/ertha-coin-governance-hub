@@ -15,7 +15,8 @@ import {
   TrendingUp,
   Heart,
   Zap,
-  Award
+  Award,
+  BookOpen
 } from "lucide-react";
 
 const Index = () => {
