@@ -77,10 +77,8 @@ const Index = () => {
           <div className="text-center">
             <div className="flex justify-center mb-8">
               <div className="relative">
-                <div className="w-24 h-24 earth-gradient rounded-full flex items-center justify-center animate-pulse">
-                  <Globe className="w-12 h-12 text-white animate-spin" style={{ animationDuration: '8s' }} />
-                </div>
-                <div className="absolute inset-0 w-24 h-24 earth-gradient rounded-full opacity-30 animate-ping"></div>
+               
+               
               </div>
             </div>
             
@@ -104,14 +102,14 @@ const Index = () => {
               </Link>
               
               <Link to="/learn">
-                <Button variant="outline" size="lg" className="border-green-300 text-green-700 hover:bg-green-50 text-lg px-8 py-6">
+                <Button variant="outline" size="lg" className="border-green-300 text-green-700 hover:bg-green-500 text-lg px-8 py-6">
                   <Zap className="w-5 h-5 mr-2" />
                   Learn More
                 </Button>
               </Link>
               
               <Link to="/governance">
-                <Button variant="outline" size="lg" className="border-green-300 text-green-700 hover:bg-green-50 text-lg px-8 py-6">
+                <Button variant="outline" size="lg" className="border-green-300 text-green-700 hover:bg-green-500 text-lg px-8 py-6">
                   <Vote className="w-5 h-5 mr-2" />
                   Vote Now
                 </Button>

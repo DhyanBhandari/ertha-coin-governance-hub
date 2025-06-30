@@ -42,10 +42,8 @@ const Navigation = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2 group">
             <div className="relative">
-              <div className="w-10 h-10 earth-gradient rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                <Leaf className="w-6 h-6 text-white" />
-              </div>
-              <div className="absolute inset-0 w-10 h-10 earth-gradient rounded-full opacity-30 group-hover:animate-ping"></div>
+             
+             
             </div>
             <span className="text-xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
               Erthaloka DAO
